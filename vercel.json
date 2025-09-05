@@ -2,7 +2,7 @@
   "version": 2,
   "functions": {
     "api/index.js": {
-      "runtime": "@vercel/node@3.1.5"
+      "runtime": "nodejs20.x"
     }
   },
   "routes": [
@@ -17,18 +17,5 @@
   ],
   "env": {
     "NODE_ENV": "production"
-  },
-  "builds": [
-    {
-      "src": "api/index.js",
-      "use": "@vercel/node",
-      "config": {
-        "runtime": "nodejs20.x"
-      }
-    },
-    {
-      "src": "index.html",
-      "use": "@vercel/static"
-    }
-  ]
+  }
 }
