@@ -359,6 +359,38 @@
             border-color: #7289da;
         }
         
+        .message-composer {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        
+        .composer-tools {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        
+        .composer-input {
+            flex: 1;
+        }
+        
+        .send-btn {
+            width: 50px;
+            background: #7289da;
+            border: none;
+            border-radius: 8px;
+            color: white;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        
+        .composer-row {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+        
         .dashboard {
             display: grid;
             grid-template-columns: 1fr 1fr;
@@ -544,6 +576,104 @@
             font-size: 12px;
             margin-top: 15px;
         }
+        
+        .messages-container {
+            max-height: 400px;
+            overflow-y: auto;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 10px;
+            padding: 15px;
+        }
+        
+        .discord-message {
+            display: flex;
+            margin-bottom: 15px;
+            padding: 10px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 8px;
+            border-left: 3px solid #7289da;
+        }
+        
+        .message-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: linear-gradient(45deg, #7289da, #99aab5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 12px;
+            font-weight: bold;
+            color: white;
+            font-size: 16px;
+        }
+        
+        .message-content {
+            flex: 1;
+        }
+        
+        .message-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 5px;
+        }
+        
+        .message-author {
+            color: #7289da;
+            font-weight: bold;
+            margin-right: 8px;
+        }
+        
+        .message-timestamp {
+            color: #72767d;
+            font-size: 12px;
+        }
+        
+        .message-text {
+            color: #dcddde;
+            line-height: 1.4;
+        }
+        
+        .bot-message {
+            border-left-color: #43b581;
+        }
+        
+        .bot-message .message-author {
+            color: #43b581;
+        }
+        
+        .real-channel {
+            opacity: 0.8;
+        }
+        
+        .real-channel:hover {
+            opacity: 1;
+        }
+        
+        .channel-settings-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            z-index: 2000;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .channel-settings-content {
+            background: rgba(47, 49, 54, 0.95);
+            padding: 30px;
+            border-radius: 15px;
+            width: 600px;
+            max-width: 90vw;
+            max-height: 80vh;
+            overflow-y: auto;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
 
         .loading {
             display: inline-block;
@@ -644,7 +774,7 @@
                         <div id="botStatusSidebar" class="status stopped">❌ Bot Offline</div>
                     </div>
                 </div>
-                <div class="channels-section">
+                <div class="channels-section" id="channelsSection">
                     <div class="channel-category">🤖 Bot Management</div>
                     <div class="channel" data-channel="bot-control" data-testid="channel-bot-control">
                         <span class="channel-icon">⚙️</span>
@@ -655,29 +785,11 @@
                         <span>server-status</span>
                     </div>
                     
-                    <div class="channel-category">🎮 Game Channels</div>
-                    <div class="channel" data-channel="fortnite" data-testid="channel-fortnite">
-                        <span class="channel-icon">🛡️</span>
-                        <span>fortnite</span>
-                    </div>
-                    <div class="channel" data-channel="valorant" data-testid="channel-valorant">
-                        <span class="channel-icon">⚡</span>
-                        <span>valorant</span>
-                    </div>
-                    <div class="channel" data-channel="cs2" data-testid="channel-cs2">
-                        <span class="channel-icon">🔫</span>
-                        <span>cs2</span>
-                    </div>
-                    <div class="channel" data-channel="apex" data-testid="channel-apex">
-                        <span class="channel-icon">💥</span>
-                        <span>apex</span>
-                    </div>
-                    <div class="channel" data-channel="cod" data-testid="channel-cod">
-                        <span class="channel-icon">🎯</span>
-                        <span>cod-warzone</span>
+                    <div id="realChannels">
+                        <!-- Real Discord server channels will be loaded here -->
                     </div>
                     
-                    <div class="channel-category">📝 Custom Messages</div>
+                    <div class="channel-category">📝 Management Tools</div>
                     <div class="channel" data-channel="custom-messages" data-testid="channel-custom-messages">
                         <span class="channel-icon">✏️</span>
                         <span>custom-messages</span>
@@ -709,6 +821,7 @@
                                 <button class="btn btn-primary" onclick="startCurrentBot()" data-testid="button-start-current-bot">🚀 Start Bot</button>
                                 <button class="btn btn-danger" onclick="stopCurrentBot()" data-testid="button-stop-current-bot">⏹️ Stop Bot</button>
                                 <button class="btn btn-secondary" onclick="removeCurrentServer()" data-testid="button-remove-current-server">🗑️ Remove Server</button>
+                                <button class="btn btn-success" onclick="loadServerChannels()" data-testid="button-refresh-channels">🔄 Refresh Channels</button>
                                 <div id="botStatus" class="status stopped">❌ Bot Stopped</div>
                                 <div id="botLog" class="log-output" style="display: none;"></div>
                             </div>
@@ -718,10 +831,26 @@
                             </div>
                         </div>
                     </div>
+                    
+                    <!-- Real Channel Content -->
+                    <div id="realChannelContent" class="channel-content" style="display: none;">
+                        <div class="messages-container" id="messagesContainer">
+                            <!-- Real Discord messages will be displayed here -->
+                        </div>
+                        <div class="channel-actions" style="margin-top: 20px;">
+                            <button class="btn btn-primary" onclick="refreshMessages()" data-testid="button-refresh-messages">🔄 Refresh Messages</button>
+                            <button class="btn btn-secondary" onclick="showChannelSettings()" data-testid="button-channel-settings">⚙️ Channel Settings</button>
+                        </div>
+                    </div>
                 </div>
                 
                 <div class="message-composer">
-                    <input type="text" class="composer-input" id="messageInput" placeholder="Send a custom message to this channel..." data-testid="input-message">
+                    <div class="composer-tools" style="margin-bottom: 10px; display: none;" id="composerTools">
+                        <button class="btn btn-secondary" onclick="insertDownloadLinks()" data-testid="button-insert-download-links">📥 Insert Download Links</button>
+                        <button class="btn btn-secondary" onclick="insertSetupInstructions()" data-testid="button-insert-setup">🛠️ Insert Setup Guide</button>
+                    </div>
+                    <input type="text" class="composer-input" id="messageInput" placeholder="Send a message to this channel..." data-testid="input-message">
+                    <button class="send-btn" onclick="sendChannelMessage()" data-testid="button-send-message">📤</button>
                 </div>
             </div>
         </div>
@@ -876,6 +1005,10 @@
             
             const contentArea = document.getElementById('contentArea');
             const channelTitle = document.getElementById('currentChannelTitle');
+            const messageInput = document.getElementById('messageInput');
+            
+            // Hide composer tools for management channels
+            document.getElementById('composerTools').style.display = 'none';
             
             // Hide all existing content
             const existingContent = contentArea.querySelectorAll('.channel-content');
@@ -887,6 +1020,7 @@
             switch(channelName) {
                 case 'bot-control':
                     title = '🤖 Bot Control';
+                    messageInput.placeholder = 'Management channel - use tools above to send messages';
                     document.getElementById('bot-control-content').style.display = 'block';
                     return;
                     
@@ -1121,12 +1255,198 @@
             
             if (currentServerId) {
                 localStorage.setItem('lastSelectedServer', currentServerId);
+                loadServerChannels();
             } else {
                 localStorage.removeItem('lastSelectedServer');
+                clearRealChannels();
             }
             
             updateServerUI();
             checkStatus();
+        }
+        
+        // Load real Discord server channels
+        async function loadServerChannels() {
+            if (!currentServerId) return;
+            
+            try {
+                const response = await fetch(`/api/server/${currentServerId}/channels`);
+                const data = await response.json();
+                
+                if (data.success) {
+                    displayRealChannels(data.channels);
+                } else {
+                    console.error('Failed to load channels:', data.error);
+                }
+            } catch (error) {
+                console.error('Error loading channels:', error);
+            }
+        }
+        
+        function displayRealChannels(channelsData) {
+            const realChannelsContainer = document.getElementById('realChannels');
+            realChannelsContainer.innerHTML = '';
+            
+            // Group channels by category
+            const categorizedChannels = {};
+            
+            channelsData.forEach(channel => {
+                const categoryName = channel.category || 'Uncategorized';
+                if (!categorizedChannels[categoryName]) {
+                    categorizedChannels[categoryName] = [];
+                }
+                categorizedChannels[categoryName].push(channel);
+            });
+            
+            // Display channels by category
+            Object.entries(categorizedChannels).forEach(([categoryName, channels]) => {
+                const categoryDiv = document.createElement('div');
+                categoryDiv.className = 'channel-category';
+                categoryDiv.textContent = `📁 ${categoryName}`;
+                realChannelsContainer.appendChild(categoryDiv);
+                
+                channels.forEach(channel => {
+                    const channelDiv = document.createElement('div');
+                    channelDiv.className = 'channel real-channel';
+                    channelDiv.setAttribute('data-channel', `real-${channel.id}`);
+                    channelDiv.setAttribute('data-channel-id', channel.id);
+                    channelDiv.innerHTML = `
+                        <span class="channel-icon">${getChannelIcon(channel.type)}</span>
+                        <span>${channel.name}</span>
+                        <small style="margin-left: auto; color: #72767d; font-size: 10px;">${channel.memberCount || 0}</small>
+                    `;
+                    
+                    channelDiv.addEventListener('click', function() {
+                        loadRealChannelContent(channel.id, channel.name);
+                    });
+                    
+                    realChannelsContainer.appendChild(channelDiv);
+                });
+            });
+        }
+        
+        function getChannelIcon(channelType) {
+            switch(channelType) {
+                case 'voice': return '🔊';
+                case 'category': return '📁';
+                case 'news': return '📢';
+                case 'stage': return '🎤';
+                case 'forum': return '💬';
+                default: return '#️⃣';
+            }
+        }
+        
+        function clearRealChannels() {
+            document.getElementById('realChannels').innerHTML = '';
+        }
+        
+        async function loadRealChannelContent(channelId, channelName) {
+            currentChannel = `real-${channelId}`;
+            
+            // Update active channel
+            document.querySelectorAll('.channel').forEach(ch => ch.classList.remove('active'));
+            document.querySelector(`[data-channel-id="${channelId}"]`).classList.add('active');
+            
+            const channelTitle = document.getElementById('currentChannelTitle');
+            channelTitle.textContent = `#️⃣ ${channelName}`;
+            
+            // Hide other content, show real channel content
+            document.getElementById('bot-control-content').style.display = 'none';
+            document.getElementById('realChannelContent').style.display = 'block';
+            
+            // Update message input placeholder
+            const messageInput = document.getElementById('messageInput');
+            messageInput.placeholder = `Send a message to #${channelName}...`;
+            
+            // Show composer tools
+            document.getElementById('composerTools').style.display = 'flex';
+            
+            // Load messages for this channel
+            await loadChannelMessages(channelId);
+        }
+        
+        async function loadChannelMessages(channelId) {
+            if (!currentServerId) return;
+            
+            try {
+                const response = await fetch(`/api/server/${currentServerId}/channel/${channelId}/messages`);
+                const data = await response.json();
+                
+                if (data.success) {
+                    displayChannelMessages(data.messages);
+                } else {
+                    document.getElementById('messagesContainer').innerHTML = `
+                        <div style="text-align: center; color: #72767d; padding: 20px;">
+                            <p>Unable to load messages for this channel.</p>
+                            <small>${data.error || 'Unknown error'}</small>
+                        </div>
+                    `;
+                }
+            } catch (error) {
+                console.error('Error loading messages:', error);
+                document.getElementById('messagesContainer').innerHTML = `
+                    <div style="text-align: center; color: #f04747; padding: 20px;">
+                        <p>Error loading messages</p>
+                        <small>${error.message}</small>
+                    </div>
+                `;
+            }
+        }
+        
+        function displayChannelMessages(messages) {
+            const container = document.getElementById('messagesContainer');
+            
+            if (!messages || messages.length === 0) {
+                container.innerHTML = `
+                    <div style="text-align: center; color: #72767d; padding: 20px;">
+                        <p>No messages in this channel yet.</p>
+                        <small>Send your first message using the composer below!</small>
+                    </div>
+                `;
+                return;
+            }
+            
+            container.innerHTML = '';
+            
+            messages.forEach(message => {
+                const messageDiv = document.createElement('div');
+                messageDiv.className = `discord-message ${message.bot ? 'bot-message' : ''}`;
+                
+                const avatarLetter = message.author.charAt(0).toUpperCase();
+                const timestamp = new Date(message.timestamp).toLocaleString();
+                
+                messageDiv.innerHTML = `
+                    <div class="message-avatar">${avatarLetter}</div>
+                    <div class="message-content">
+                        <div class="message-header">
+                            <span class="message-author">${message.author}${message.bot ? ' BOT' : ''}</span>
+                            <span class="message-timestamp">${timestamp}</span>
+                        </div>
+                        <div class="message-text">${message.content}</div>
+                    </div>
+                `;
+                
+                container.appendChild(messageDiv);
+            });
+            
+            // Scroll to bottom
+            container.scrollTop = container.scrollHeight;
+        }
+        
+        async function refreshMessages() {
+            const activeChannel = document.querySelector('.channel.active');
+            if (activeChannel && activeChannel.dataset.channelId) {
+                await loadChannelMessages(activeChannel.dataset.channelId);
+                showNotification('✅ Messages refreshed!', 'success');
+            }
+        }
+        
+        function showChannelSettings() {
+            // Show channel-specific settings modal
+            const activeChannel = document.querySelector('.channel.active');
+            if (!activeChannel) return;
+            
+            alert('Channel settings will open here - customize download links, auto-responses, etc.');
         }
         
         function removeCurrentServer() {
@@ -1166,12 +1486,72 @@
             await stopBot();
         }
         
-        // Send custom message
-        async function sendCustomMessage() {
-            const channel = document.getElementById('customChannel').value;
-            const message = document.getElementById('customMessage').value;
+        // Send message to current channel
+        async function sendChannelMessage() {
+            const messageInput = document.getElementById('messageInput');
+            const message = messageInput.value.trim();
             
-            if (!message.trim()) {
+            if (!message) {
+                showNotification('❌ Please enter a message', 'error');
+                return;
+            }
+            
+            if (!currentServerId) {
+                showNotification('❌ Please select a server first', 'error');
+                return;
+            }
+            
+            const activeChannel = document.querySelector('.channel.active');
+            if (!activeChannel || !activeChannel.dataset.channelId) {
+                showNotification('❌ Please select a channel first', 'error');
+                return;
+            }
+            
+            const channelId = activeChannel.dataset.channelId;
+            
+            try {
+                const response = await fetch(`/api/server/${currentServerId}/channel/${channelId}/send`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ message })
+                });
+                
+                const data = await response.json();
+                if (data.success) {
+                    showNotification('✅ Message sent!', 'success');
+                    messageInput.value = '';
+                    // Refresh messages to show the new message
+                    setTimeout(() => loadChannelMessages(channelId), 1000);
+                } else {
+                    showNotification(`❌ Failed to send message: ${data.error}`, 'error');
+                }
+            } catch (error) {
+                showNotification('❌ Error sending message: ' + error.message, 'error');
+            }
+        }
+        
+        // Insert download links template
+        function insertDownloadLinks() {
+            const messageInput = document.getElementById('messageInput');
+            const template = `🎮 **Download Links Available!**\n\n📥 **How to Download:**\n1. Choose any link below\n2. Extract with password: \`mystic25\`\n3. Run main.bat\n4. Press INSERT or F12 in game\n\n📞 Need help? Contact our staff!`;
+            messageInput.value = template;
+            messageInput.focus();
+        }
+        
+        // Insert setup instructions template
+        function insertSetupInstructions() {
+            const messageInput = document.getElementById('messageInput');
+            const template = `🛠️ **Setup Instructions**\n\n1️⃣ Download the .rar file\n2️⃣ Extract with password: \`mystic25\`\n3️⃣ Run \`main.bat\` (injection bypasser)\n4️⃣ May flag as false positive - normal for cheats\n5️⃣ Wait for automatic game detection\n6️⃣ Wait for injection completion\n7️⃣ Press \`INSERT\` or \`F12\` in lobby\n8️⃣ Contact owners if you need help!\n\n🔑 **Password:** mystic25`;
+            messageInput.value = template;
+            messageInput.focus();
+        }
+        
+        // Send custom message (legacy function)
+        async function sendCustomMessage() {
+            const channel = document.getElementById('customChannel')?.value;
+            const message = document.getElementById('customMessage')?.value;
+            
+            if (!message?.trim()) {
                 showNotification('❌ Please enter a message', 'error');
                 return;
             }
@@ -1195,7 +1575,9 @@
                 const data = await response.json();
                 if (data.success) {
                     showNotification(`✅ Message sent to #${channel}`, 'success');
-                    document.getElementById('customMessage').value = '';
+                    if (document.getElementById('customMessage')) {
+                        document.getElementById('customMessage').value = '';
+                    }
                 } else {
                     showNotification(`❌ Failed to send message: ${data.error}`, 'error');
                 }
@@ -1402,11 +1784,17 @@
             // Message input handler
             document.getElementById('messageInput').addEventListener('keypress', function(e) {
                 if (e.key === 'Enter') {
-                    const message = this.value.trim();
-                    if (message) {
-                        sendCustomMessage();
-                        this.value = '';
-                    }
+                    sendChannelMessage();
+                }
+            });
+            
+            // Show/hide composer tools when focusing on real channels
+            document.getElementById('messageInput').addEventListener('focus', function() {
+                const activeChannel = document.querySelector('.channel.active');
+                if (activeChannel && activeChannel.dataset.channelId) {
+                    document.getElementById('composerTools').style.display = 'flex';
+                } else {
+                    document.getElementById('composerTools').style.display = 'none';
                 }
             });
             
@@ -1423,6 +1811,11 @@
             setInterval(() => {
                 if (isLoggedIn) {
                     checkStatus();
+                    // Auto-refresh messages if viewing a real channel
+                    const activeChannel = document.querySelector('.channel.active');
+                    if (activeChannel && activeChannel.dataset.channelId) {
+                        loadChannelMessages(activeChannel.dataset.channelId);
+                    }
                 }
             }, 10000);
         });
